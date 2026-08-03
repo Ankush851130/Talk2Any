@@ -1,0 +1,30 @@
+{
+  "name": "talk2any-client",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@react-oauth/google": "^0.13.5",
+    "axios": "^1.7.9",
+    "canvas-confetti": "^1.9.4",
+    "framer-motion": "^12.4.7",
+    "lucide-react": "^0.475.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-icons": "^5.4.0",
+    "react-router-dom": "^7.1.5",
+    "socket.io-client": "^4.8.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.5",
+    "@vitejs/plugin-basic-ssl": "^2.3.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tailwindcss": "^4.0.5",
+    "vite": "^6.1.0"
+  }
+}

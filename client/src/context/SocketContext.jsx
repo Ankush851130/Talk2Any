@@ -10,7 +10,8 @@ export const SocketProvider = ({ children }) => {
   const { user } = useAuth();
 
   useEffect(() => {
-    const newSocket = io(window.location.origin, {
+    const serverUrl = import.meta.env.VITE_SERVER_URL || window.location.origin;
+    const newSocket = io(serverUrl, {
       autoConnect: true,
       reconnection: true,
       reconnectionAttempts: 10,

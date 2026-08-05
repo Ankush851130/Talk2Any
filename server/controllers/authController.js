@@ -83,17 +83,23 @@ exports.googleLogin = catchAsync(async (req, res, next) => {
   }
 
   // Derive username from email address (the part before @)
-  const emailUsername = email.split('@')[0].trim();
+  let cleanUsername = email.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '');
+  if (cleanUsername.length < 3) {
+    cleanUsername = `user_${cleanUsername || Math.floor(100 + Math.random() * 900)}`;
+  }
+  if (cleanUsername.length > 25) {
+    cleanUsername = cleanUsername.slice(0, 25);
+  }
 
   let user = await User.findOne({
     $or: [{ googleId: sub }, { email: email.toLowerCase() }],
   });
 
   if (!user) {
-    let usernameCandidate = emailUsername;
+    let usernameCandidate = cleanUsername;
     let counter = 1;
     while (await User.findOne({ username: usernameCandidate })) {
-      usernameCandidate = `${emailUsername}${counter}`;
+      usernameCandidate = `${cleanUsername}${counter}`;
       counter++;
     }
 

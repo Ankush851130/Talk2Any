@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { FiMicOff, FiMaximize2, FiUser, FiTv, FiBookmark, FiUserX } from 'react-icons/fi';
+import AudioEqualizer from './AudioEqualizer';
 
 const PeerVideo = ({
   stream,
@@ -36,9 +37,8 @@ const PeerVideo = ({
 
   return (
     <div
-      className={`relative w-full h-full min-h-[220px] rounded-3xl bg-slate-900 overflow-hidden border transition-all duration-300 ${
-        isSpeaking ? 'speaking-glow border-emerald-500 ring-2 ring-emerald-500/40' : 'border-slate-800'
-      } ${isPinned ? 'ring-2 ring-indigo-500 shadow-2xl' : ''}`}
+      className={`relative w-full h-full min-h-[220px] rounded-3xl bg-slate-900 overflow-hidden border transition-all duration-300 ${isSpeaking ? 'speaking-glow border-emerald-500 ring-2 ring-emerald-500/40' : 'border-slate-800'
+        } ${isPinned ? 'ring-2 ring-indigo-500 shadow-2xl' : ''}`}
     >
       {/* Audio Stream Element - Always Active for Stream Audio Playback */}
       {stream && (
@@ -61,22 +61,20 @@ const PeerVideo = ({
           className={`w-full h-full object-cover ${isLocal && !isScreenSharing ? 'scale-x-[-1]' : ''}`}
         />
       ) : (
-        /* Video Off Avatar Placeholder with Active Speaker Glow Ring */
+        /* Video Off Avatar Placeholder with Active Speaker Glow Ring & Equalizer */
         <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 p-6 text-center">
           <div className="relative mb-3">
             <img
               src={user?.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${user?.username || 'user'}`}
               alt={user?.username || 'Participant'}
-              className={`w-20 h-20 rounded-full border-2 bg-slate-800 object-cover shadow-xl transition-all duration-300 ${
-                isSpeaking
-                  ? 'ring-4 ring-emerald-500 border-emerald-400 animate-pulse shadow-emerald-500/50 shadow-2xl scale-105'
-                  : 'border-indigo-500/40'
-              }`}
+              className={`w-20 h-20 rounded-full border-2 bg-slate-800 object-cover shadow-xl transition-all duration-300 ${isSpeaking
+                ? 'ring-4 ring-emerald-500 border-emerald-400 animate-pulse shadow-emerald-500/50 shadow-2xl scale-105'
+                : 'border-indigo-500/40'
+                }`}
             />
             {isSpeaking && (
-              <span className="absolute -top-1 -right-1 flex h-5 w-5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-5 w-5 bg-emerald-500 border-2 border-slate-900"></span>
+              <span className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 border-2 border-slate-900 shadow-lg">
+                <AudioEqualizer size="sm" isSpeaking={true} />
               </span>
             )}
           </div>
@@ -89,11 +87,12 @@ const PeerVideo = ({
         </div>
       )}
 
-      {/* Top Left User Badges & Owner/Co-Owner Tags */}
+      {/* Top Left User Badges & Owner/Co-Owner Tags & Equalizer */}
       <div className="absolute top-3 left-3 flex flex-wrap items-center gap-1.5 z-10">
         <span className="px-2.5 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-slate-800 text-xs font-semibold text-white flex items-center space-x-1.5 shadow-md">
           <FiUser className="w-3 h-3 text-indigo-400" />
           <span>{user?.username || 'Participant'} {isLocal && '(You)'}</span>
+          {isSpeaking && <AudioEqualizer size="sm" isSpeaking={true} className="ml-1" />}
         </span>
 
         {isHandRaised && (
@@ -137,15 +136,22 @@ const PeerVideo = ({
         {onPin && (
           <button
             onClick={onPin}
-            className={`p-1.5 rounded-full backdrop-blur-md border text-xs transition-colors cursor-pointer ${
-              isPinned ? 'bg-indigo-600 text-white border-indigo-500' : 'bg-slate-950/80 text-slate-300 border-slate-800 hover:text-white'
-            }`}
+            className={`p-1.5 rounded-full backdrop-blur-md border text-xs transition-colors cursor-pointer ${isPinned ? 'bg-indigo-600 text-white border-indigo-500' : 'bg-slate-950/80 text-slate-300 border-slate-800 hover:text-white'
+              }`}
             title={isPinned ? 'Unpin participant' : 'Pin participant'}
           >
             <FiBookmark className="w-3.5 h-3.5" />
           </button>
         )}
       </div>
+
+      {/* Bottom Floating Speaking Equalizer Badge */}
+      {isSpeaking && (
+        <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full bg-emerald-500/90 text-white backdrop-blur-md border border-emerald-400 shadow-lg flex items-center space-x-1.5 z-10 animate-fade-in">
+          <AudioEqualizer size="sm" isSpeaking={true} />
+          <span className="text-[11px] font-extrabold tracking-tight">Speaking</span>
+        </div>
+      )}
 
       {/* Bottom Status Icons (Muted Badge) */}
       {isMuted && (

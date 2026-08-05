@@ -54,8 +54,13 @@ const Footer = () => {
 
       <div className="max-w-7xl mx-auto pt-8 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500">
         <p>© {new Date().getFullYear()} Talk2Any Platform. All rights reserved.</p>
-        <p className="flex items-center space-x-1 mt-2 sm:mt-0">
-          <span>Crafted with</span> <FiHeart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 inline" /> <span>for global connections</span>
+        <p className="flex items-center space-x-1.5 mt-2 sm:mt-0">
+          <span>Developed with</span>
+          <FiHeart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 inline" />
+          <span>by</span>
+          <span className="font-extrabold text-indigo-400 hover:text-indigo-300 transition-colors">
+            Ankush Sharma
+          </span>
         </p>
       </div>
     </footer>

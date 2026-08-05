@@ -53,6 +53,11 @@ const userSchema = new mongoose.Schema(
       learning: [{ type: String }],
     },
     interests: [{ type: String }],
+    karma: {
+      type: Number,
+      default: 0,
+    },
+    receivedHeartsFrom: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     achievements: [

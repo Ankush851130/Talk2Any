@@ -24,6 +24,7 @@ const Dashboard = () => {
   const [language, setLanguage] = useState('Any');
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isLoginPromptOpen, setIsLoginPromptOpen] = useState(false);
   const [passwordModalRoom, setPasswordModalRoom] = useState(null);
   const [detailsModalRoom, setDetailsModalRoom] = useState(null);
   const [roomPassword, setRoomPassword] = useState('');
@@ -112,6 +113,10 @@ const Dashboard = () => {
   };
 
   const handleJoinRoom = async (room) => {
+    if (!user) {
+      setIsLoginPromptOpen(true);
+      return;
+    }
     if (room.isPrivate) {
       setPasswordModalRoom(room);
       setRoomPassword('');
@@ -122,6 +127,10 @@ const Dashboard = () => {
   };
 
   const handleCreateRoomClick = () => {
+    if (!user) {
+      setIsLoginPromptOpen(true);
+      return;
+    }
     setIsCreateModalOpen(true);
   };
 
@@ -145,51 +154,87 @@ const Dashboard = () => {
       <Navbar onCreateRoomClick={handleCreateRoomClick} />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* User Welcome Header & Action Banner */}
-        <div className="mb-8 p-6 sm:p-8 rounded-3xl glass-card border border-slate-800 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center space-x-4">
-            <img
-              src={user?.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${user?.username}`}
-              alt={user?.username}
-              className="w-16 h-16 rounded-2xl bg-slate-800 border-2 border-indigo-500/40 object-cover shadow-xl"
-            />
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center space-x-2">
-                <span>Welcome back, {user?.username || 'Learner'}!</span>
-                <span className="text-xl">👋</span>
-              </h1>
-              <p className="text-xs text-slate-400 mt-1">
-                Spoken: <strong className="text-indigo-300">{user?.languages?.spoken?.join(', ') || 'English'}</strong> • Country: <strong className="text-emerald-300">{user?.country || 'Global'}</strong>
-                {user?.isVerified ? (
-                  <span className="ml-2 inline-flex items-center text-emerald-400 text-xs font-bold">
-                    ✓ Verified Account
-                  </span>
-                ) : (
-                  <span className="ml-2 inline-flex items-center text-amber-400 text-xs font-bold">
-                    ⚠ Unverified Email
-                  </span>
-                )}
-              </p>
+        {/* Header Action Banner */}
+        {user ? (
+          <div className="mb-8 p-6 sm:p-8 rounded-3xl glass-card border border-slate-800 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center space-x-4">
+              <img
+                src={user?.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${user?.username}`}
+                alt={user?.username}
+                className="w-16 h-16 rounded-2xl bg-slate-800 border-2 border-indigo-500/40 object-cover shadow-xl"
+              />
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center space-x-2">
+                  <span>Welcome back, {user?.username || 'Learner'}!</span>
+                  <span className="text-xl">👋</span>
+                </h1>
+                <p className="text-xs text-slate-400 mt-1">
+                  Spoken: <strong className="text-indigo-300">{user?.languages?.spoken?.join(', ') || 'English'}</strong> • Country: <strong className="text-emerald-300">{user?.country || 'Global'}</strong>
+                  {user?.isVerified ? (
+                    <span className="ml-2 inline-flex items-center text-emerald-400 text-xs font-bold">
+                      ✓ Verified Account
+                    </span>
+                  ) : (
+                    <span className="ml-2 inline-flex items-center text-amber-400 text-xs font-bold">
+                      ⚠ Unverified Email
+                    </span>
+                  )}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-3 w-full md:w-auto">
+              <button
+                onClick={handleCreateRoomClick}
+                className="flex-1 md:flex-initial px-6 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm shadow-xl shadow-indigo-600/30 hover:scale-105 active:scale-95 transition-all flex items-center justify-center space-x-2 cursor-pointer"
+              >
+                <FiPlus className="w-5 h-5" />
+                <span>Create Talk Room</span>
+              </button>
+              <button
+                onClick={fetchRooms}
+                className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                title="Refresh Room List"
+              >
+                <FiRefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+              </button>
             </div>
           </div>
+        ) : (
+          <div className="mb-8 p-6 sm:p-8 rounded-3xl glass-card border border-slate-800 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center space-x-2">
+                <span>Join or Start a Live Voice & Video Room 🌐</span>
+              </h1>
+              <p className="text-xs text-slate-400 mt-2 max-w-xl leading-relaxed">
+                Connect instantly with people worldwide to practice languages, code together, or study in focused 4-person groups.
+              </p>
+            </div>
 
-          <div className="flex items-center space-x-3 w-full md:w-auto">
-            <button
-              onClick={handleCreateRoomClick}
-              className="flex-1 md:flex-initial px-6 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm shadow-xl shadow-indigo-600/30 hover:scale-105 active:scale-95 transition-all flex items-center justify-center space-x-2 cursor-pointer"
-            >
-              <FiPlus className="w-5 h-5" />
-              <span>Create Talk Room</span>
-            </button>
-            <button
-              onClick={fetchRooms}
-              className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
-              title="Refresh Room List"
-            >
-              <FiRefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
-            </button>
+            <div className="flex items-center space-x-3 w-full md:w-auto">
+              <button
+                onClick={handleCreateRoomClick}
+                className="flex-1 md:flex-initial px-6 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm shadow-xl shadow-indigo-600/30 hover:scale-105 active:scale-95 transition-all flex items-center justify-center space-x-2 cursor-pointer"
+              >
+                <FiPlus className="w-5 h-5" />
+                <span>Create Talk Room</span>
+              </button>
+              <button
+                onClick={() => navigate('/login')}
+                className="px-6 py-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-200 hover:bg-slate-800 font-bold text-sm transition-all cursor-pointer"
+              >
+                Sign In
+              </button>
+              <button
+                onClick={fetchRooms}
+                className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                title="Refresh Room List"
+              >
+                <FiRefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Room Filter Controls */}
         <RoomFilter
@@ -389,6 +434,39 @@ const Dashboard = () => {
               </div>
             </form>
           )}
+        </div>
+      </Modal>
+
+      {/* Login Prompt Modal for Unauthenticated Guests */}
+      <Modal
+        isOpen={isLoginPromptOpen}
+        onClose={() => setIsLoginPromptOpen(false)}
+        title="Sign In Required"
+      >
+        <div className="space-y-4 text-center">
+          <div className="w-14 h-14 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 flex items-center justify-center mx-auto text-2xl">
+            🔐
+          </div>
+          <h3 className="text-base font-bold text-white">
+            Sign in to join voice & video rooms
+          </h3>
+          <p className="text-xs text-slate-400 leading-relaxed max-w-sm mx-auto">
+            You can freely browse all live talk rooms, but you need a free Talk2Any account to enter or host a call.
+          </p>
+          <div className="flex flex-col gap-3 pt-2">
+            <button
+              onClick={() => navigate('/login')}
+              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 transition-all cursor-pointer"
+            >
+              Sign In with Email or Google
+            </button>
+            <button
+              onClick={() => navigate('/register')}
+              className="w-full py-3 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800 font-bold text-xs transition-all cursor-pointer"
+            >
+              Create a New Account
+            </button>
+          </div>
         </div>
       </Modal>
 

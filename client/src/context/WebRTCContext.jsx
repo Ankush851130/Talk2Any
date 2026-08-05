@@ -38,14 +38,23 @@ export const WebRTCProvider = ({ children }) => {
   const animationFrameRef = useRef(null);
   const screenTrackRef = useRef(null);
 
+  const isMutedRef = useRef(isMuted);
+  useEffect(() => {
+    isMutedRef.current = isMuted;
+  }, [isMuted]);
+
   // Audio speaking indicator detection
   const setupAudioAnalysis = (stream) => {
     try {
       const audioTrack = stream.getAudioTracks()[0];
       if (!audioTrack) return;
 
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+
       if (audioContextRef.current) {
-        try { audioContextRef.current.close(); } catch (e) {}
+        try { audioContextRef.current.close(); } catch (e) { }
       }
 
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -53,6 +62,7 @@ export const WebRTCProvider = ({ children }) => {
       const source = audioCtx.createMediaStreamSource(stream);
 
       analyser.fftSize = 512;
+      analyser.smoothingTimeConstant = 0.4;
       source.connect(analyser);
 
       audioContextRef.current = audioCtx;
@@ -61,7 +71,25 @@ export const WebRTCProvider = ({ children }) => {
       const dataArray = new Uint8Array(analyser.frequencyBinCount);
 
       const checkVolume = () => {
-        if (!analyserRef.current) return;
+        if (!analyserRef.current || !localStreamRef.current) return;
+
+        const currentTrack = localStreamRef.current.getAudioTracks()[0];
+        if (!currentTrack || !currentTrack.enabled || isMutedRef.current) {
+          setIsSpeaking((prev) => {
+            const rId = currentRoomIdRef.current || currentRoomId;
+            if (prev && socket && rId) {
+              socket.emit('speaking-status', { roomId: rId, isSpeaking: false });
+            }
+            return false;
+          });
+          animationFrameRef.current = requestAnimationFrame(checkVolume);
+          return;
+        }
+
+        if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
+          audioContextRef.current.resume().catch(() => {});
+        }
+
         analyserRef.current.getByteFrequencyData(dataArray);
 
         let sum = 0;
@@ -70,7 +98,7 @@ export const WebRTCProvider = ({ children }) => {
         }
 
         const average = sum / dataArray.length;
-        const speaking = average > 15;
+        const speaking = average > 8; // Threshold 8 for sensitive speech detection
 
         setIsSpeaking((prev) => {
           const rId = currentRoomIdRef.current || currentRoomId;
@@ -121,7 +149,7 @@ export const WebRTCProvider = ({ children }) => {
       setIsVideoOff(!videoEnabled);
       setIsMuted(!audioEnabled);
 
-      if (audioEnabled && audioTrack) {
+      if (audioTrack) {
         setupAudioAnalysis(stream);
       }
 
@@ -144,7 +172,7 @@ export const WebRTCProvider = ({ children }) => {
         setIsVideoOff(true);
         setIsMuted(!audioEnabled);
 
-        if (audioEnabled && audioTrack) {
+        if (audioTrack) {
           setupAudioAnalysis(audioOnlyStream);
         }
         return audioOnlyStream;
@@ -579,7 +607,7 @@ export const WebRTCProvider = ({ children }) => {
       cancelAnimationFrame(animationFrameRef.current);
     }
     if (audioContextRef.current) {
-      try { audioContextRef.current.close(); } catch (e) {}
+      try { audioContextRef.current.close(); } catch (e) { }
     }
 
     const stream = localStreamRef.current || localStream;

@@ -1,6 +1,7 @@
 import React from 'react';
 import { FiX, FiUserX, FiMicOff, FiGlobe, FiStar } from 'react-icons/fi';
 import { useSocket } from '../../context/SocketContext';
+import AudioEqualizer from './AudioEqualizer';
 
 const ParticipantsList = ({
   roomId,
@@ -63,17 +64,29 @@ const ParticipantsList = ({
           return (
             <div
               key={p.socketId || userId}
-              className="p-3 rounded-2xl bg-slate-950/60 border border-slate-800/80 flex items-center justify-between gap-2"
+              className={`p-3 rounded-2xl bg-slate-950/60 border transition-all flex items-center justify-between gap-2 ${
+                p.isSpeaking ? 'border-emerald-500/80 shadow-[0_0_12px_rgba(34,197,94,0.25)]' : 'border-slate-800/80'
+              }`}
             >
               <div className="flex items-center space-x-3 min-w-0">
-                <img
-                  src={p.user?.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${p.user?.username}`}
-                  alt={p.user?.username}
-                  className="w-9 h-9 rounded-xl bg-slate-800 object-cover border border-slate-700 flex-shrink-0"
-                />
+                <div className="relative flex-shrink-0">
+                  <img
+                    src={p.user?.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${p.user?.username}`}
+                    alt={p.user?.username}
+                    className={`w-9 h-9 rounded-xl bg-slate-800 object-cover border ${
+                      p.isSpeaking ? 'border-emerald-400 ring-2 ring-emerald-500/50' : 'border-slate-700'
+                    }`}
+                  />
+                  {p.isSpeaking && (
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 border border-slate-900 shadow">
+                      <AudioEqualizer size="sm" isSpeaking={true} />
+                    </span>
+                  )}
+                </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-bold text-white flex items-center space-x-1 truncate">
+                  <p className="text-xs font-bold text-white flex items-center space-x-1.5 truncate">
                     <span className="truncate">{p.user?.username}</span>
+                    {p.isSpeaking && <AudioEqualizer size="sm" isSpeaking={true} />}
                     {isMe && <span className="text-[10px] text-indigo-400">(You)</span>}
                     {isOwner && <span className="text-amber-400 font-bold text-[10px]" title="Room Creator / Owner">👑</span>}
                     {isCoOwner && !isOwner && <span className="text-purple-400 font-bold text-[10px]" title="Co-Owner">⭐</span>}

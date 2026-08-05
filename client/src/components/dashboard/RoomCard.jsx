@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FiGlobe, FiLock, FiSettings, FiLink, FiSlash, FiHeart } from 'react-icons/fi';
+import { getLanguageFlag } from '../../utils/languages';
 
 const levelMap = {
   Beginner: 'Beginner',
@@ -36,9 +37,9 @@ const RoomCard = ({ room, onJoin, onOpenDetails }) => {
       <div>
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center space-x-2">
-            {/* Blue Free4Talk style Globe Icon */}
-            <div className="w-7 h-7 rounded-full bg-sky-500/20 border border-sky-400/40 flex items-center justify-center text-sky-400">
-              <FiGlobe className="w-4 h-4" />
+            {/* Country Flag or Globe Icon */}
+            <div className="w-8 h-8 rounded-full bg-sky-500/20 border border-sky-400/40 flex items-center justify-center text-sm">
+              {getLanguageFlag(room.language)}
             </div>
             <div className="flex items-baseline space-x-1.5">
               <span className="text-sm font-extrabold text-white tracking-tight">
@@ -119,11 +120,10 @@ const RoomCard = ({ room, onJoin, onOpenDetails }) => {
         <button
           onClick={() => onJoin(room)}
           disabled={isDisabled}
-          className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold transition-all shadow-lg flex items-center justify-center space-x-2 cursor-pointer ${
-            isDisabled
+          className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold transition-all shadow-lg flex items-center justify-center space-x-2 cursor-pointer ${isDisabled
               ? 'bg-slate-800/60 text-slate-500 border border-slate-700/50 cursor-not-allowed'
               : 'bg-emerald-600/90 hover:bg-emerald-500 text-white border border-emerald-500/40 shadow-emerald-600/20 hover:scale-[1.02] active:scale-[0.98]'
-          }`}
+            }`}
         >
           {isLocked ? (
             <>

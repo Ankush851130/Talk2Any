@@ -36,11 +36,10 @@ const ControlsBar = ({
           e.stopPropagation();
           if (onToggleMute) onToggleMute();
         }}
-        className={`p-3.5 rounded-full text-white font-medium transition-all duration-300 shadow-md cursor-pointer ${
-          isMuted
+        className={`p-3.5 rounded-full text-white font-medium transition-all duration-300 shadow-md cursor-pointer ${isMuted
             ? 'bg-rose-600 hover:bg-rose-500 shadow-rose-600/30'
             : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
-        }`}
+          }`}
         title={isMuted ? 'Unmute Audio' : 'Mute Audio'}
       >
         {isMuted ? <FiMicOff className="w-5 h-5" /> : <FiMic className="w-5 h-5 text-emerald-400" />}
@@ -54,11 +53,10 @@ const ControlsBar = ({
           e.stopPropagation();
           if (onToggleVideo) onToggleVideo();
         }}
-        className={`p-3.5 rounded-full text-white font-medium transition-all duration-300 shadow-md cursor-pointer ${
-          isVideoOff
+        className={`p-3.5 rounded-full text-white font-medium transition-all duration-300 shadow-md cursor-pointer ${isVideoOff
             ? 'bg-rose-600 hover:bg-rose-500 shadow-rose-600/30'
             : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
-        }`}
+          }`}
         title={isVideoOff ? 'Turn Camera On' : 'Turn Camera Off'}
       >
         {isVideoOff ? <FiVideoOff className="w-5 h-5" /> : <FiVideo className="w-5 h-5 text-indigo-400" />}
@@ -72,11 +70,10 @@ const ControlsBar = ({
           e.stopPropagation();
           if (onToggleScreenShare) onToggleScreenShare();
         }}
-        className={`p-3.5 rounded-full font-medium transition-all duration-300 shadow-md cursor-pointer ${
-          isScreenSharing
+        className={`p-3.5 rounded-full font-medium transition-all duration-300 shadow-md cursor-pointer ${isScreenSharing
             ? 'bg-indigo-600 text-white shadow-indigo-600/30'
             : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
-        }`}
+          }`}
         title={isScreenSharing ? 'Stop Screen Sharing' : 'Share Screen'}
       >
         <FiTv className="w-5 h-5" />
@@ -90,11 +87,10 @@ const ControlsBar = ({
           e.stopPropagation();
           if (onToggleHandRaise) onToggleHandRaise();
         }}
-        className={`p-3.5 rounded-full font-medium transition-all duration-300 shadow-md cursor-pointer ${
-          isHandRaised
+        className={`p-3.5 rounded-full font-medium transition-all duration-300 shadow-md cursor-pointer ${isHandRaised
             ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/40 animate-bounce'
             : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
-        }`}
+          }`}
         title={isHandRaised ? 'Lower Hand' : 'Raise Hand ✋'}
       >
         <span className="text-base leading-none">✋</span>
@@ -110,9 +106,8 @@ const ControlsBar = ({
           e.stopPropagation();
           if (onToggleParticipants) onToggleParticipants();
         }}
-        className={`p-3 rounded-full font-medium transition-all duration-300 cursor-pointer ${
-          isParticipantsOpen ? 'bg-indigo-600 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
-        }`}
+        className={`p-3 rounded-full font-medium transition-all duration-300 cursor-pointer ${isParticipantsOpen ? 'bg-indigo-600 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+          }`}
         title="Participants"
       >
         <FiUsers className="w-5 h-5" />
@@ -126,9 +121,8 @@ const ControlsBar = ({
           e.stopPropagation();
           if (onToggleChat) onToggleChat();
         }}
-        className={`relative p-3 rounded-full font-medium transition-all duration-300 cursor-pointer ${
-          isChatOpen ? 'bg-indigo-600 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
-        }`}
+        className={`relative p-3 rounded-full font-medium transition-all duration-300 cursor-pointer ${isChatOpen ? 'bg-indigo-600 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+          }`}
         title="Live Chat"
       >
         <FiMessageSquare className="w-5 h-5" />

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import Modal from '../common/Modal';
 import { useAuth } from '../../context/AuthContext';
-
-const AVAILABLE_LANGUAGES = ['English', 'Hindi', 'Spanish', 'French', 'German', 'Japanese', 'Chinese', 'Arabic'];
+import { WORLD_LANGUAGES } from '../../utils/languages';
 
 const EditProfileModal = ({ isOpen, onClose }) => {
   const { user, updateUser } = useAuth();
@@ -99,19 +98,20 @@ const EditProfileModal = ({ isOpen, onClose }) => {
           <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
             Languages You Speak
           </label>
-          <div className="flex flex-wrap gap-2">
-            {AVAILABLE_LANGUAGES.map((lang) => (
+          <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto p-2 bg-slate-950 rounded-xl border border-slate-800 scrollbar-none">
+            {WORLD_LANGUAGES.map((lang) => (
               <button
                 type="button"
-                key={lang}
-                onClick={() => toggleSpokenLanguage(lang)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                  spoken.includes(lang)
+                key={lang.name}
+                onClick={() => toggleSpokenLanguage(lang.name)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center space-x-1.5 ${
+                  spoken.includes(lang.name)
                     ? 'bg-emerald-600 text-white shadow-md'
-                    : 'bg-slate-950 text-slate-400 border border-slate-800'
+                    : 'bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-700'
                 }`}
               >
-                {lang}
+                <span>{lang.flag}</span>
+                <span>{lang.name}</span>
               </button>
             ))}
           </div>
@@ -122,19 +122,20 @@ const EditProfileModal = ({ isOpen, onClose }) => {
           <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
             Languages You Are Learning
           </label>
-          <div className="flex flex-wrap gap-2">
-            {AVAILABLE_LANGUAGES.map((lang) => (
+          <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto p-2 bg-slate-950 rounded-xl border border-slate-800 scrollbar-none">
+            {WORLD_LANGUAGES.map((lang) => (
               <button
                 type="button"
-                key={lang}
-                onClick={() => toggleLearningLanguage(lang)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                  learning.includes(lang)
+                key={lang.name}
+                onClick={() => toggleLearningLanguage(lang.name)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center space-x-1.5 ${
+                  learning.includes(lang.name)
                     ? 'bg-indigo-600 text-white shadow-md'
-                    : 'bg-slate-950 text-slate-400 border border-slate-800'
+                    : 'bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-700'
                 }`}
               >
-                {lang}
+                <span>{lang.flag}</span>
+                <span>{lang.name}</span>
               </button>
             ))}
           </div>

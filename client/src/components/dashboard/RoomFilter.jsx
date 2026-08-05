@@ -1,16 +1,19 @@
-import React from 'react';
-import { FiSearch, FiSliders } from 'react-icons/fi';
+import React, { useState } from 'react';
+import { FiSearch, FiSliders, FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { WORLD_LANGUAGES } from '../../utils/languages';
 
-const languagePills = [
-  { name: 'Any', label: 'All', count: 50 },
-  { name: 'English', label: 'English', count: 22 },
-  { name: 'Hindi', label: 'Hindi', count: 8 },
-  { name: 'Spanish', label: 'Spanish', count: 5 },
-  { name: 'French', label: 'French', count: 4 },
-  { name: 'German', label: 'German', count: 3 },
-  { name: 'Japanese', label: 'Japanese', count: 3 },
-  { name: 'Chinese', label: 'Chinese', count: 3 },
-  { name: 'Arabic', label: 'Arabic', count: 2 },
+const popularLanguages = [
+  { name: 'English', flag: '🇺🇸' },
+  { name: 'Spanish', flag: '🇪🇸' },
+  { name: 'French', flag: '🇫🇷' },
+  { name: 'German', flag: '🇩🇪' },
+  { name: 'Japanese', flag: '🇯🇵' },
+  { name: 'Chinese', flag: '🇨🇳' },
+  { name: 'Korean', flag: '🇰🇷' },
+  { name: 'Hindi', flag: '🇮🇳' },
+  { name: 'Arabic', flag: '🇦🇪' },
+  { name: 'Russian', flag: '🇷🇺' },
+  { name: 'Portuguese', flag: '🇵🇹' },
 ];
 
 const categories = ['All', 'Study', 'Programming', 'Gaming', 'Music', 'Language Exchange', 'Interview Practice', 'General'];
@@ -25,6 +28,15 @@ const RoomFilter = ({
   gridCols = 3,
   setGridCols,
 }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const handleAllLanguagesClick = () => {
+    setLanguage('Any');
+    setIsExpanded((prev) => !prev);
+  };
+
+  const displayLanguages = isExpanded ? WORLD_LANGUAGES : popularLanguages;
+
   return (
     <div className="space-y-4 mb-8">
       {/* Top Search Bar & Column Layout Switcher (Free4Talk Style) */}
@@ -65,10 +77,29 @@ const RoomFilter = ({
         )}
       </div>
 
-      {/* Language Filter Pills Bar (Free4Talk Style) */}
-      <div className="flex items-center space-x-2 overflow-x-auto pb-1 scrollbar-none">
-        {languagePills.map((lang) => {
-          const isActive = (language === 'Any' && lang.name === 'Any') || language === lang.name;
+      {/* Language Filter Pills Bar (Inline Expandable - Free4Talk Style) */}
+      <div className={`flex items-center gap-2 ${isExpanded ? 'flex-wrap' : 'overflow-x-auto scrollbar-none'} pb-1.5 transition-all`}>
+        {/* All Languages Pill Button */}
+        <button
+          onClick={handleAllLanguagesClick}
+          className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer flex items-center space-x-1.5 border ${
+            language === 'Any'
+              ? 'bg-sky-600 text-white border-sky-500 shadow-md shadow-sky-600/30 scale-105'
+              : 'bg-slate-900/90 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700'
+          }`}
+        >
+          <span>🌐</span>
+          <span>All Languages</span>
+          {isExpanded ? (
+            <FiChevronUp className="w-3.5 h-3.5 text-sky-200" />
+          ) : (
+            <FiChevronDown className="w-3.5 h-3.5 text-slate-400" />
+          )}
+        </button>
+
+        {/* Language Pill Buttons in Identical Design */}
+        {displayLanguages.map((lang) => {
+          const isActive = language === lang.name;
           return (
             <button
               key={lang.name}
@@ -79,13 +110,19 @@ const RoomFilter = ({
                   : 'bg-slate-900/90 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700'
               }`}
             >
-              <span>{lang.label}</span>
-              <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${isActive ? 'bg-sky-700 text-white' : 'bg-slate-800 text-slate-400'}`}>
-                {lang.count}
-              </span>
+              <span>{lang.flag}</span>
+              <span>{lang.name}</span>
             </button>
           );
         })}
+
+        {/* More / Less Toggle Pill */}
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-900 text-sky-400 border border-sky-500/30 hover:bg-sky-500/10 transition-all cursor-pointer flex items-center space-x-1"
+        >
+          <span>{isExpanded ? 'Show Less ▲' : `+ More (${WORLD_LANGUAGES.length}) ▼`}</span>
+        </button>
       </div>
 
       {/* Category Pills Bar */}

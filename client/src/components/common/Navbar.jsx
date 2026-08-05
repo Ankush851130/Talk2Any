@@ -49,8 +49,8 @@ const Navbar = ({ onCreateRoomClick }) => {
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-300">
               <FiVideo className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
-              Talk<span className="text-indigo-400">2</span>Any
+            <span className="text-xl font-extrabold tracking-tight brand-logo-text">
+              Talk<span className="text-indigo-500 font-black">2</span>Any
             </span>
           </Link>
 

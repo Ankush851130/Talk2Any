@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import Modal from '../common/Modal';
 import { roomApi } from '../../services/roomApi';
 import { FiLock, FiGlobe, FiTag, FiBarChart2 } from 'react-icons/fi';
+import { WORLD_LANGUAGES } from '../../utils/languages';
 
 const categories = ['Study', 'Programming', 'Gaming', 'Music', 'Language Exchange', 'Interview Practice', 'General'];
-const languages = ['English', 'Hindi', 'Spanish', 'French', 'German', 'Japanese', 'Chinese', 'Arabic'];
 const levels = ['Any Level', 'Beginner', 'Upper Beginner', 'Intermediate', 'Upper Intermediate', 'Advanced'];
 
 const RoomCreateModal = ({ isOpen, onClose, onCreated }) => {
@@ -139,22 +139,23 @@ const RoomCreateModal = ({ isOpen, onClose, onCreated }) => {
               {selectedLanguages.length}/2 selected
             </span>
           </div>
-          <div className="flex flex-wrap gap-1.5 p-3 bg-slate-950 border border-slate-800 rounded-xl">
-            {languages.map((l) => {
-              const isSelected = selectedLanguages.includes(l);
+          <div className="flex flex-wrap gap-1.5 p-3 bg-slate-950 border border-slate-800 rounded-xl max-h-48 overflow-y-auto scrollbar-none">
+            {WORLD_LANGUAGES.map((l) => {
+              const isSelected = selectedLanguages.includes(l.name);
               return (
                 <button
-                  key={l}
+                  key={l.name}
                   type="button"
-                  onClick={() => toggleLanguage(l)}
+                  onClick={() => toggleLanguage(l.name)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center space-x-1.5 ${
                     isSelected
                       ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-600/20 border border-emerald-400/30'
                       : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800/80 hover:border-slate-700'
                   }`}
                 >
+                  <span>{l.flag}</span>
                   {isSelected && <span className="text-emerald-200 font-bold text-xs">✓</span>}
-                  <span>{l}</span>
+                  <span>{l.name}</span>
                 </button>
               );
             })}

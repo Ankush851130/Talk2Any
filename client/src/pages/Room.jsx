@@ -216,8 +216,8 @@ const Room = () => {
 
   // Build list of participants for moderation list
   const allParticipantsList = [
-    { socketId: 'local', user },
-    ...remotePeersArray.map(([sId, p]) => ({ socketId: sId, user: p.user })),
+    { socketId: 'local', user, isSpeaking },
+    ...remotePeersArray.map(([sId, p]) => ({ socketId: sId, user: p.user, isSpeaking: p.isSpeaking })),
   ];
 
   return (
@@ -266,11 +266,10 @@ const Room = () => {
             <div className="flex items-center space-x-2">
               <button
                 onClick={handleToggleLock}
-                className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
-                  room?.isLocked
-                    ? 'bg-rose-600/30 border-rose-500 text-rose-300 shadow-md'
-                    : 'bg-slate-900 border-slate-800 text-slate-300 hover:text-white'
-                }`}
+                className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${room?.isLocked
+                  ? 'bg-rose-600/30 border-rose-500 text-rose-300 shadow-md'
+                  : 'bg-slate-900 border-slate-800 text-slate-300 hover:text-white'
+                  }`}
                 title={room?.isLocked ? 'Room is Locked (Click to Unlock)' : 'Lock Room (Click to Lock)'}
               >
                 <FiLock className={`w-3.5 h-3.5 ${room?.isLocked ? 'text-rose-400' : 'text-slate-400'}`} />
@@ -293,11 +292,10 @@ const Room = () => {
           <button
             onClick={handleTestAudio}
             disabled={isTestingAudio}
-            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
-              isTestingAudio
-                ? 'bg-emerald-600/30 border-emerald-500 text-emerald-300 animate-pulse'
-                : 'bg-slate-900 border-slate-800 text-slate-300 hover:text-white'
-            }`}
+            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${isTestingAudio
+              ? 'bg-emerald-600/30 border-emerald-500 text-emerald-300 animate-pulse'
+              : 'bg-slate-900 border-slate-800 text-slate-300 hover:text-white'
+              }`}
             title="Test hearing your microphone sound through your speakers"
           >
             <FiVolume2 className="w-3.5 h-3.5 text-emerald-400" />
@@ -416,13 +414,12 @@ const Room = () => {
           ) : (
             /* Default Responsive Grid */
             <div
-              className={`w-full h-full max-w-6xl mx-auto grid gap-4 items-center justify-center ${
-                remotePeersArray.length === 0
-                  ? 'grid-cols-1 max-w-2xl'
-                  : remotePeersArray.length === 1
+              className={`w-full h-full max-w-6xl mx-auto grid gap-4 items-center justify-center ${remotePeersArray.length === 0
+                ? 'grid-cols-1 max-w-2xl'
+                : remotePeersArray.length === 1
                   ? 'grid-cols-1 md:grid-cols-2 max-w-4xl'
                   : 'grid-cols-1 sm:grid-cols-2 max-w-5xl'
-              }`}
+                }`}
             >
               {/* Local User Box */}
               <PeerVideo

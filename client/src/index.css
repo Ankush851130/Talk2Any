@@ -42,6 +42,18 @@ html:not(.light) .bg-slate-900\/95 {
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
+.dropdown-menu-panel {
+  background-color: #090d16 !important;
+  border: 1px solid rgba(71, 85, 105, 0.6) !important;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.12) !important;
+}
+
+html.light .dropdown-menu-panel {
+  background-color: #ffffff !important;
+  border: 1px solid rgba(203, 213, 225, 0.9) !important;
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05) !important;
+}
+
 .glass-panel-light {
   background: rgba(255, 255, 255, 0.85);
   border: 1px solid rgba(0, 0, 0, 0.08);

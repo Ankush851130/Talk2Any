@@ -57,6 +57,21 @@ const Navbar = ({ onCreateRoomClick }) => {
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
+  const handleToggleNotif = async () => {
+    const nextState = !showNotifMenu;
+    setShowNotifMenu(nextState);
+    setShowProfileMenu(false);
+
+    if (nextState && unreadCount > 0) {
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+      try {
+        await userApi.markNotificationsRead();
+      } catch (err) {
+        console.warn('Notif mark read error:', err.message);
+      }
+    }
+  };
+
   const handleLogout = async () => {
     setShowProfileMenu(false);
     setShowNotifMenu(false);
@@ -133,10 +148,7 @@ const Navbar = ({ onCreateRoomClick }) => {
                 {/* Notifications Dropdown */}
                 <div className="relative" ref={notifRef}>
                   <button
-                    onClick={() => {
-                      setShowNotifMenu((prev) => !prev);
-                      setShowProfileMenu(false);
-                    }}
+                    onClick={handleToggleNotif}
                     className="relative p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white transition-colors cursor-pointer"
                   >
                     <FiBell className="w-5 h-5" />
@@ -148,24 +160,52 @@ const Navbar = ({ onCreateRoomClick }) => {
                   </button>
 
                   {showNotifMenu && (
-                    <div className="absolute right-0 mt-2 w-80 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-4 z-50">
-                      <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
-                        <h4 className="text-sm font-bold text-white">Notifications</h4>
-                        <span className="text-xs text-indigo-400">{unreadCount} new</span>
+                    <div className="absolute right-[-0.5rem] sm:right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-sm dropdown-menu-panel rounded-2xl p-4 z-50 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-800/80">
+                        <h4 className="text-sm font-bold text-white flex items-center space-x-2">
+                          <FiBell className="w-4 h-4 text-indigo-400" />
+                          <span>Notifications</span>
+                        </h4>
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                          {unreadCount} new
+                        </span>
                       </div>
-                      <div className="space-y-2 max-h-64 overflow-y-auto">
+                      <div className="space-y-2.5 max-h-[65vh] sm:max-h-80 overflow-y-auto pr-1">
                         {notifications.length === 0 ? (
-                          <p className="text-xs text-slate-500 text-center py-4">No notifications yet</p>
+                          <div className="text-center py-8">
+                            <FiBell className="w-8 h-8 text-slate-600 mx-auto mb-2 opacity-40" />
+                            <p className="text-xs text-slate-400">No notifications yet</p>
+                          </div>
                         ) : (
                           notifications.map((n) => (
                             <div
                               key={n._id}
-                              className={`p-2.5 rounded-xl text-xs ${
-                                n.read ? 'bg-slate-900/50 text-slate-400' : 'bg-indigo-950/40 text-slate-200 border border-indigo-500/20'
+                              onClick={() => {
+                                if (n.link) {
+                                  navigate(n.link);
+                                  setShowNotifMenu(false);
+                                }
+                              }}
+                              className={`p-3 rounded-xl text-xs transition-all ${
+                                n.link ? 'cursor-pointer hover:border-indigo-500/50' : ''
+                              } ${
+                                n.read
+                                  ? 'bg-slate-900/80 border border-slate-800 text-slate-300 hover:bg-slate-900'
+                                  : 'bg-indigo-950/90 border border-indigo-500/40 text-slate-100 shadow-sm shadow-indigo-500/10'
                               }`}
                             >
-                              <p className="font-semibold text-white">{n.title}</p>
-                              <p className="text-[11px] text-slate-400">{n.message}</p>
+                              <div className="flex items-start justify-between">
+                                <p className="font-bold text-white text-xs mb-0.5">{n.title}</p>
+                                {!n.read && (
+                                  <span className="w-2 h-2 rounded-full bg-pink-500 flex-shrink-0 ml-2 mt-1"></span>
+                                )}
+                              </div>
+                              <p className="text-[11px] text-slate-300 leading-snug">{n.message}</p>
+                              {n.createdAt && (
+                                <span className="text-[9px] text-slate-400 block mt-1.5 font-mono">
+                                  {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                              )}
                             </div>
                           ))
                         )}
@@ -191,14 +231,14 @@ const Navbar = ({ onCreateRoomClick }) => {
                   </button>
 
                   {showProfileMenu && (
-                    <div className="absolute right-0 mt-2 w-56 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-2 z-50">
-                      <div className="px-3 py-2 border-b border-slate-800 mb-1 flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-bold text-white">{user.username}</p>
+                    <div className="absolute right-0 mt-2 w-64 max-w-[calc(100vw-2rem)] dropdown-menu-panel rounded-2xl p-3 z-50 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="px-3 py-2.5 border-b border-slate-800/80 mb-2 flex items-center justify-between">
+                        <div className="overflow-hidden">
+                          <p className="text-sm font-bold text-white truncate">{user.username}</p>
                           <p className="text-xs text-slate-400 truncate">{user.email}</p>
                         </div>
                         {user.tagId && (
-                          <span className="px-2 py-0.5 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-[10px] font-mono font-bold">
+                          <span className="px-2 py-0.5 rounded-lg bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 text-[10px] font-mono font-bold flex-shrink-0 ml-2">
                             {user.tagId}
                           </span>
                         )}
@@ -206,14 +246,14 @@ const Navbar = ({ onCreateRoomClick }) => {
                       <Link
                         to={`/profile/${user.username}`}
                         onClick={() => setShowProfileMenu(false)}
-                        className="flex items-center space-x-2 px-3 py-2 rounded-xl text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                        className="flex items-center space-x-2.5 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-indigo-600/20 hover:text-white transition-colors"
                       >
                         <FiUser className="w-4 h-4 text-indigo-400" />
                         <span>My Profile</span>
                       </Link>
                       <button
                         onClick={handleLogout}
-                        className="w-full flex items-center space-x-2 px-3 py-2 rounded-xl text-sm text-rose-400 hover:bg-rose-500/10 transition-colors mt-1 cursor-pointer"
+                        className="w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/20 transition-colors mt-1 cursor-pointer"
                       >
                         <FiLogOut className="w-4 h-4" />
                         <span>Sign Out</span>

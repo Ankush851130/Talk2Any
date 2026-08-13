@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import ThemeToggle from './ThemeToggle';
@@ -22,6 +22,9 @@ const Navbar = ({ onCreateRoomClick }) => {
   const [showNotifMenu, setShowNotifMenu] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
+  const notifRef = useRef(null);
+  const profileRef = useRef(null);
+
   useEffect(() => {
     if (user) {
       userApi
@@ -33,9 +36,30 @@ const Navbar = ({ onCreateRoomClick }) => {
     }
   }, [user]);
 
+  // Handle clicking outside to close dropdown menus
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (notifRef.current && !notifRef.current.contains(event.target)) {
+        setShowNotifMenu(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setShowProfileMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, []);
+
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const handleLogout = async () => {
+    setShowProfileMenu(false);
+    setShowNotifMenu(false);
     await logout();
     navigate('/login');
   };
@@ -107,9 +131,12 @@ const Navbar = ({ onCreateRoomClick }) => {
                 )}
 
                 {/* Notifications Dropdown */}
-                <div className="relative">
+                <div className="relative" ref={notifRef}>
                   <button
-                    onClick={() => setShowNotifMenu(!showNotifMenu)}
+                    onClick={() => {
+                      setShowNotifMenu((prev) => !prev);
+                      setShowProfileMenu(false);
+                    }}
                     className="relative p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white transition-colors cursor-pointer"
                   >
                     <FiBell className="w-5 h-5" />
@@ -148,9 +175,12 @@ const Navbar = ({ onCreateRoomClick }) => {
                 </div>
 
                 {/* User Menu */}
-                <div className="relative">
+                <div className="relative" ref={profileRef}>
                   <button
-                    onClick={() => setShowProfileMenu(!showProfileMenu)}
+                    onClick={() => {
+                      setShowProfileMenu((prev) => !prev);
+                      setShowNotifMenu(false);
+                    }}
                     className="flex items-center space-x-2 focus:outline-none cursor-pointer"
                   >
                     <img

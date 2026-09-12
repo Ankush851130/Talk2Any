@@ -5,6 +5,9 @@ import { useSocket } from '../context/SocketContext';
 import { useWebRTC } from '../context/WebRTCContext';
 import { roomApi } from '../services/roomApi';
 import PeerVideo from '../components/room/PeerVideo';
+import MemberSquareBox from '../components/room/MemberSquareBox';
+import EmptySquareSlot from '../components/room/EmptySquareSlot';
+import RoomStage from '../components/room/RoomStage';
 import ControlsBar from '../components/room/ControlsBar';
 import ChatPanel from '../components/room/ChatPanel';
 import ParticipantsList from '../components/room/ParticipantsList';
@@ -322,124 +325,67 @@ const Room = () => {
 
       {/* Main Video Call Area + Drawers */}
       <div className="flex-1 flex overflow-hidden relative">
-        {/* Video Grid Container */}
-        <div className="flex-1 p-4 md:p-6 overflow-y-auto flex flex-col justify-center">
-          {/* Pinned View */}
-          {pinnedSocketId ? (
-            <div className="h-full flex flex-col md:flex-row gap-4">
-              <div className="flex-1 h-full min-h-[300px]">
-                {pinnedSocketId === 'local' ? (
-                  <PeerVideo
-                    stream={localStream}
-                    user={user}
-                    isLocal
-                    isMuted={isMuted}
-                    isVideoOff={isVideoOff}
-                    isScreenSharing={isScreenSharing}
-                    isSpeaking={isSpeaking}
-                    isHandRaised={isHandRaised}
-                    isPinned
-                    isRoomOwner={isRoomOwner(user?._id)}
-                    isCoOwner={isCoOwner(user?._id)}
-                    canModerate={canModerate}
-                    onPin={() => setPinnedSocketId(null)}
-                  />
-                ) : (
-                  (() => {
-                    const peer = remoteStreams.get(pinnedSocketId);
-                    return (
-                      <PeerVideo
-                        stream={peer?.stream}
-                        user={peer?.user}
-                        isMuted={peer?.isMuted}
-                        isVideoOff={peer?.isVideoOff}
-                        isScreenSharing={peer?.isScreenSharing}
-                        isSpeaking={peer?.isSpeaking}
-                        isHandRaised={raisedHands.get(pinnedSocketId)}
-                        isPinned
-                        isRoomOwner={isRoomOwner(peer?.user?._id)}
-                        isCoOwner={isCoOwner(peer?.user?._id)}
-                        canModerate={canModerate}
-                        onPin={() => setPinnedSocketId(null)}
-                        onKick={() => handleKickParticipant(pinnedSocketId, peer?.user?._id)}
-                      />
-                    );
-                  })()
-                )}
-              </div>
+        {/* Free4Talk Layout Container: Upper Stage + Bottom Square Member Dock */}
+        <div className="flex-1 p-3 sm:p-4 md:p-6 flex flex-col justify-between overflow-y-auto max-w-7xl mx-auto w-full gap-4">
+          {/* Upper Stage Display */}
+          <div className="flex-1 min-h-[220px] sm:min-h-[260px] flex items-center justify-center">
+            <RoomStage
+              pinnedSocketId={pinnedSocketId}
+              pinnedPeer={pinnedSocketId && pinnedSocketId !== 'local' ? remoteStreams.get(pinnedSocketId) : null}
+              localStream={localStream}
+              user={user}
+              isLocalMuted={isMuted}
+              isLocalVideoOff={isVideoOff}
+              isLocalScreenSharing={isScreenSharing}
+              isLocalSpeaking={isSpeaking}
+              isLocalHandRaised={isHandRaised}
+              isRoomOwner={isRoomOwner}
+              isCoOwner={isCoOwner}
+              canModerate={canModerate}
+              onUnpin={() => setPinnedSocketId(null)}
+              onKick={handleKickParticipant}
+              room={room}
+              totalParticipants={allParticipantsList.length}
+              onCopyInvite={copyRoomLink}
+            />
+          </div>
 
-              {/* Side Strip */}
-              <div className="w-full md:w-64 flex md:flex-col gap-4 overflow-x-auto md:overflow-y-auto">
-                {pinnedSocketId !== 'local' && (
-                  <div className="w-48 md:w-full h-36 flex-shrink-0">
-                    <PeerVideo
-                      stream={localStream}
-                      user={user}
-                      isLocal
-                      isMuted={isMuted}
-                      isVideoOff={isVideoOff}
-                      isScreenSharing={isScreenSharing}
-                      isSpeaking={isSpeaking}
-                      isHandRaised={isHandRaised}
-                      isRoomOwner={isRoomOwner(user?._id)}
-                      isCoOwner={isCoOwner(user?._id)}
-                      canModerate={canModerate}
-                      onPin={() => setPinnedSocketId('local')}
-                    />
-                  </div>
-                )}
-                {remotePeersArray.map(
-                  ([sId, p]) =>
-                    sId !== pinnedSocketId && (
-                      <div key={sId} className="w-48 md:w-full h-36 flex-shrink-0">
-                        <PeerVideo
-                          stream={p.stream}
-                          user={p.user}
-                          isMuted={p.isMuted}
-                          isVideoOff={p.isVideoOff}
-                          isScreenSharing={p.isScreenSharing}
-                          isSpeaking={p.isSpeaking}
-                          isHandRaised={raisedHands.get(sId)}
-                          isRoomOwner={isRoomOwner(p.user?._id)}
-                          isCoOwner={isCoOwner(p.user?._id)}
-                          canModerate={canModerate}
-                          onPin={() => setPinnedSocketId(sId)}
-                          onKick={() => handleKickParticipant(sId, p.user?._id)}
-                        />
-                      </div>
-                    )
-                )}
+          {/* Bottom Dock: Member Square Boxes (Free4Talk Style) */}
+          <div className="w-full bg-slate-900/80 backdrop-blur-xl border border-slate-800/90 rounded-3xl p-3 sm:p-4 shadow-2xl">
+            <div className="flex items-center justify-between mb-3 px-1">
+              <div className="flex items-center space-x-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                <h3 className="text-xs font-extrabold text-slate-200 uppercase tracking-wider">
+                  Room Members ({allParticipantsList.length} / {Number(room?.maxParticipants) || 4} Slots)
+                </h3>
               </div>
+              <span className="text-[11px] text-indigo-400 font-semibold hidden sm:inline">
+                ✨ Free4Talk Mode: Every member sees each other in small square boxes
+              </span>
             </div>
-          ) : (
-            /* Default Responsive Grid */
-            <div
-              className={`w-full h-full max-w-6xl mx-auto grid gap-4 items-center justify-center ${remotePeersArray.length === 0
-                ? 'grid-cols-1 max-w-2xl'
-                : remotePeersArray.length === 1
-                  ? 'grid-cols-1 md:grid-cols-2 max-w-4xl'
-                  : 'grid-cols-1 sm:grid-cols-2 max-w-5xl'
-                }`}
-            >
-              {/* Local User Box */}
-              <PeerVideo
+
+            {/* Scrollable / Centered Row of Member Square Cards */}
+            <div className="flex items-center justify-start sm:justify-center gap-3 sm:gap-4 overflow-x-auto pb-2 pt-1 scrollbar-thin">
+              {/* Local User Square Box */}
+              <MemberSquareBox
                 stream={localStream}
                 user={user}
-                isLocal
+                isLocal={true}
                 isMuted={isMuted}
                 isVideoOff={isVideoOff}
                 isScreenSharing={isScreenSharing}
                 isSpeaking={isSpeaking}
                 isHandRaised={isHandRaised}
+                isPinned={pinnedSocketId === 'local'}
                 isRoomOwner={isRoomOwner(user?._id)}
                 isCoOwner={isCoOwner(user?._id)}
                 canModerate={canModerate}
-                onPin={() => setPinnedSocketId('local')}
+                onPin={() => setPinnedSocketId(pinnedSocketId === 'local' ? null : 'local')}
               />
 
-              {/* Remote Peers Boxes */}
+              {/* Remote Peers Square Boxes */}
               {remotePeersArray.map(([sId, p]) => (
-                <PeerVideo
+                <MemberSquareBox
                   key={sId}
                   stream={p.stream}
                   user={p.user}
@@ -448,15 +394,26 @@ const Room = () => {
                   isScreenSharing={p.isScreenSharing}
                   isSpeaking={p.isSpeaking}
                   isHandRaised={raisedHands.get(sId)}
+                  isPinned={pinnedSocketId === sId}
                   isRoomOwner={isRoomOwner(p.user?._id)}
                   isCoOwner={isCoOwner(p.user?._id)}
                   canModerate={canModerate}
-                  onPin={() => setPinnedSocketId(sId)}
+                  onPin={() => setPinnedSocketId(pinnedSocketId === sId ? null : sId)}
                   onKick={() => handleKickParticipant(sId, p.user?._id)}
                 />
               ))}
+
+              {/* Empty Capacity Slots */}
+              {Array.from({ length: Math.max(0, (Number(room?.maxParticipants) || 4) - allParticipantsList.length) }).map((_, idx) => (
+                <EmptySquareSlot
+                  key={`empty-slot-${idx}`}
+                  slotIndex={allParticipantsList.length + idx + 1}
+                  totalSlots={Number(room?.maxParticipants) || 4}
+                  onInvite={copyRoomLink}
+                />
+              ))}
             </div>
-          )}
+          </div>
         </div>
 
         {/* Live Chat Panel Drawer */}

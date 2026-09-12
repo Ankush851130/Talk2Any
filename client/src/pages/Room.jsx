@@ -239,7 +239,7 @@ const Room = () => {
   ];
 
   return (
-    <div className="h-screen w-screen bg-[#0A0D14] text-slate-100 flex flex-col justify-between overflow-hidden select-none relative pr-14">
+    <div className="h-screen w-screen bg-[#0A0D14] text-slate-100 flex flex-col justify-between overflow-hidden select-none relative pr-0">
       {/* Top Floating Controls Bar (Mic, Cam, Signal, Leave) matching screenshot */}
       <TopControlBar
         isMuted={isMuted}

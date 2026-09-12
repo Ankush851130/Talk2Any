@@ -240,6 +240,11 @@ const Room = () => {
 
   return (
     <div className="h-screen w-screen bg-[#0A0D14] text-slate-100 flex flex-col justify-between overflow-hidden select-none relative pr-0">
+      {/* Decorative Ambient Background Glows */}
+      <div className="absolute top-10 left-1/4 w-[450px] h-[450px] bg-indigo-600/15 rounded-full blur-[140px] pointer-events-none animate-pulse" />
+      <div className="absolute bottom-10 right-1/4 w-[400px] h-[400px] bg-purple-600/15 rounded-full blur-[130px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-600/10 rounded-full blur-[160px] pointer-events-none" />
+
       {/* Top Floating Controls Bar (Mic, Cam, Signal, Leave) matching screenshot */}
       <TopControlBar
         isMuted={isMuted}

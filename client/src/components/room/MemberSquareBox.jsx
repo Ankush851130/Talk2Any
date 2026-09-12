@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { FiMicOff, FiSettings, FiUserX, FiBookmark } from 'react-icons/fi';
+import AudioEqualizer from './AudioEqualizer';
 
 const MemberSquareBox = ({
   stream,
@@ -44,18 +45,38 @@ const MemberSquareBox = ({
     return name.substring(0, 2).toUpperCase();
   };
 
+  // Generate deterministic gradient based on username for rich visual aesthetics
+  const getGradientStyle = (name) => {
+    const gradients = [
+      'from-indigo-600 via-purple-700 to-slate-900',
+      'from-emerald-600 via-teal-700 to-slate-900',
+      'from-amber-600 via-orange-700 to-slate-900',
+      'from-cyan-600 via-blue-700 to-slate-900',
+      'from-rose-600 via-pink-700 to-slate-900',
+      'from-violet-600 via-purple-800 to-slate-900',
+    ];
+    if (!name) return gradients[0];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % gradients.length;
+    return gradients[index];
+  };
+
   const username = user?.username || 'Guest';
   const initials = getInitials(username);
-  const subtitleText = user?.country || 'UNVERIFIED';
+  const subtitleText = user?.country || 'GLOBAL';
+  const gradientClass = getGradientStyle(username);
 
   return (
     <div
-      className={`relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-xl flex-shrink-0 overflow-hidden select-none shadow-2xl border transition-all duration-300 group ${
+      className={`relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-2xl flex-shrink-0 overflow-hidden select-none shadow-2xl border transition-all duration-300 group hover:scale-105 ${
         isSpeaking
-          ? 'border-blue-500 ring-2 ring-blue-500/60 shadow-blue-500/30 scale-[1.02]'
+          ? 'border-emerald-400 ring-2 ring-emerald-400/80 shadow-[0_0_20px_rgba(52,211,153,0.5)] scale-[1.03]'
           : isPinned
-          ? 'border-indigo-500 ring-2 ring-indigo-500/50'
-          : 'border-slate-800/90'
+          ? 'border-indigo-400 ring-2 ring-indigo-500/80 shadow-indigo-500/40'
+          : 'border-slate-800/90 hover:border-slate-700'
       }`}
     >
       {/* Hidden Audio Element */}
@@ -69,7 +90,7 @@ const MemberSquareBox = ({
         />
       )}
 
-      {/* Video or Initial Box View */}
+      {/* Video or Avatar Box View */}
       {!isVideoOff && stream ? (
         <video
           ref={videoRef}
@@ -86,33 +107,33 @@ const MemberSquareBox = ({
           className="w-full h-full object-cover"
         />
       ) : (
-        /* Fallback Brown Initials Card View (Matching Screenshot) */
-        <div className="w-full h-full bg-[#6c4d42] flex flex-col items-center justify-center p-2 text-center relative">
-          <span className="text-2xl sm:text-3xl font-extrabold text-white tracking-wide drop-shadow-md">
+        /* Vibrant Gradient Initials Card View */
+        <div className={`w-full h-full bg-gradient-to-br ${gradientClass} flex flex-col items-center justify-center p-2 text-center relative border border-white/10`}>
+          <span className="text-2xl sm:text-3xl font-black text-white tracking-wider drop-shadow-md">
             {initials}
           </span>
-          <span className="text-[9px] font-bold text-slate-300 tracking-wider uppercase mt-0.5 opacity-90">
+          <span className="text-[9px] font-bold text-slate-200 tracking-wider uppercase mt-0.5 opacity-90 truncate max-w-full px-1">
             {subtitleText}
           </span>
         </div>
       )}
 
-      {/* Top Right Gear / Settings Icon Button (Matching Screenshot) */}
+      {/* Top Right Gear / Settings / Action Icons */}
       <div className="absolute top-1.5 right-1.5 flex items-center space-x-1 z-10">
         {onPin && (
           <button
             onClick={onPin}
-            className="p-1 rounded bg-slate-950/60 hover:bg-slate-900 text-slate-300 hover:text-white transition-colors cursor-pointer"
+            className="p-1 rounded-lg bg-slate-950/70 hover:bg-slate-900 text-slate-300 hover:text-white transition-colors cursor-pointer border border-white/10"
             title={isPinned ? 'Unpin from stage' : 'Pin to stage'}
           >
-            <FiBookmark className={`w-3 h-3 ${isPinned ? 'text-indigo-400' : ''}`} />
+            <FiBookmark className={`w-3 h-3 ${isPinned ? 'text-indigo-400 fill-indigo-400' : ''}`} />
           </button>
         )}
 
         {canModerate && !isLocal && onKick && (
           <button
             onClick={onKick}
-            className="p-1 rounded bg-rose-600/80 hover:bg-rose-600 text-white transition-colors cursor-pointer"
+            className="p-1 rounded-lg bg-rose-600/90 hover:bg-rose-600 text-white transition-colors cursor-pointer border border-rose-400/30"
             title="Kick participant"
           >
             <FiUserX className="w-3 h-3" />
@@ -121,7 +142,7 @@ const MemberSquareBox = ({
 
         <button
           type="button"
-          className="p-1 rounded bg-slate-950/40 hover:bg-slate-900/80 text-slate-300 hover:text-white transition-colors cursor-pointer"
+          className="p-1 rounded-lg bg-slate-950/50 hover:bg-slate-900/80 text-slate-300 hover:text-white transition-colors cursor-pointer border border-white/5 opacity-80 group-hover:opacity-100"
           title="Member settings"
         >
           <FiSettings className="w-3 h-3" />
@@ -131,16 +152,16 @@ const MemberSquareBox = ({
       {/* Top Left Hand Raised Indicator */}
       {isHandRaised && (
         <div className="absolute top-1.5 left-1.5 z-10">
-          <span className="px-1.5 py-0.5 rounded bg-amber-500 text-white text-[10px] font-bold animate-bounce shadow-md">
+          <span className="px-1.5 py-0.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] font-extrabold animate-bounce shadow-lg shadow-amber-500/40">
             ✋
           </span>
         </div>
       )}
 
-      {/* Bottom Left Blue "Owner" Pill Badge (Matching Screenshot) */}
+      {/* Bottom Left Owner / Co-Owner Badges */}
       {isRoomOwner && (
         <div className="absolute bottom-1.5 left-1.5 z-10">
-          <span className="px-1.5 py-0.5 rounded bg-blue-600 text-white font-extrabold text-[9px] leading-none shadow-md">
+          <span className="px-1.5 py-0.5 rounded-md bg-blue-600/90 backdrop-blur-md border border-blue-400/40 text-white font-extrabold text-[9px] leading-none shadow-md">
             Owner
           </span>
         </div>
@@ -148,23 +169,30 @@ const MemberSquareBox = ({
 
       {isCoOwner && !isRoomOwner && (
         <div className="absolute bottom-1.5 left-1.5 z-10">
-          <span className="px-1.5 py-0.5 rounded bg-purple-600 text-white font-extrabold text-[9px] leading-none shadow-md">
+          <span className="px-1.5 py-0.5 rounded-md bg-purple-600/90 backdrop-blur-md border border-purple-400/40 text-white font-extrabold text-[9px] leading-none shadow-md">
             Co-Owner
           </span>
         </div>
       )}
 
-      {/* Bottom Right Muted Mic Icon (Matching Screenshot) */}
-      {isMuted && (
-        <div className="absolute bottom-1.5 right-1.5 z-10" title="Muted">
-          <FiMicOff className="w-3.5 h-3.5 text-white drop-shadow-md" />
-        </div>
-      )}
+      {/* Bottom Right Muted Mic / Speaking Equalizer */}
+      <div className="absolute bottom-1.5 right-1.5 z-10 flex items-center space-x-1">
+        {isSpeaking && (
+          <div className="px-1 py-0.5 rounded bg-emerald-950/80 border border-emerald-500/50 backdrop-blur-sm flex items-center justify-center">
+            <AudioEqualizer size="sm" isSpeaking={true} />
+          </div>
+        )}
+        {isMuted && (
+          <div className="p-1 rounded-md bg-rose-950/80 border border-rose-500/40 text-white backdrop-blur-sm" title="Muted">
+            <FiMicOff className="w-3 h-3 text-rose-300" />
+          </div>
+        )}
+      </div>
 
-      {/* Bottom Edge Glowing Blue/Emerald Bar when Speaking (Matching Screenshot) */}
+      {/* Bottom Edge Glowing Emerald Bar when Speaking */}
       <div
         className={`absolute bottom-0 inset-x-0 h-1 transition-all duration-200 ${
-          isSpeaking ? 'bg-blue-500 shadow-blue-500 shadow-md' : 'bg-transparent'
+          isSpeaking ? 'bg-gradient-to-r from-emerald-400 to-teal-400 shadow-[0_0_12px_#34d399]' : 'bg-transparent'
         }`}
       />
     </div>

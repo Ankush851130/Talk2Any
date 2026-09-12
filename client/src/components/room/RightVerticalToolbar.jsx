@@ -22,14 +22,14 @@ const RightVerticalToolbar = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  // If toolbar is collapsed, show floating toggle button on the right edge
+  // Collapsed state: Floating Glass Button
   if (!isOpen) {
     return (
       <div className="fixed right-3 top-1/2 -translate-y-1/2 z-30 select-none">
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className="relative px-2.5 py-2 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-[10px] shadow-2xl backdrop-blur-md flex flex-col items-center space-y-1 border border-blue-400/40 transition-all hover:scale-105 cursor-pointer"
+          className="relative px-3 py-2.5 rounded-2xl bg-indigo-600/90 hover:bg-indigo-500 text-white font-bold text-[10px] shadow-[0_10px_25px_rgba(99,102,241,0.4)] backdrop-blur-xl flex flex-col items-center space-y-1 border border-indigo-400/40 transition-all hover:scale-105 active:scale-95 cursor-pointer"
           title="Show Tools Menu (Chat, Share, Settings)"
         >
           <FiMenu className="w-4 h-4" />
@@ -37,7 +37,7 @@ const RightVerticalToolbar = ({
             Tools
           </span>
           {unreadMessages > 0 && (
-            <span className="absolute -top-1 -left-1 w-4 h-4 rounded-full bg-rose-500 text-white font-extrabold text-[9px] flex items-center justify-center animate-pulse">
+            <span className="absolute -top-1 -left-1 w-4 h-4 rounded-full bg-rose-500 text-white font-extrabold text-[9px] flex items-center justify-center animate-pulse shadow-md">
               {unreadMessages}
             </span>
           )}
@@ -46,33 +46,35 @@ const RightVerticalToolbar = ({
     );
   }
 
-  // Expanded Right Vertical Toolbar containing the 5 icons
+  // Expanded Right Vertical Toolbar
   return (
-    <aside className="fixed right-0 top-0 bottom-0 w-14 bg-slate-950/95 border-l border-slate-800/90 flex flex-col items-center justify-between py-4 z-30 backdrop-blur-md select-none animate-in slide-in-from-right duration-200">
+    <aside className="fixed right-0 top-0 bottom-0 w-16 bg-slate-950/90 border-l border-white/10 flex flex-col items-center justify-between py-5 z-30 backdrop-blur-xl select-none animate-in slide-in-from-right duration-200 shadow-2xl">
       {/* Top Section Icons */}
-      <div className="flex flex-col items-center space-y-4 w-full">
-        {/* Collapse Close Arrow Button */}
+      <div className="flex flex-col items-center space-y-4 w-full px-2">
+        {/* Collapse Close Button */}
         <button
           onClick={() => setIsOpen(false)}
-          className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition-all cursor-pointer"
+          className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition-all cursor-pointer hover:scale-105"
           title="Hide Tools Menu"
         >
-          <FiChevronRight className="w-5 h-5 text-blue-400" />
+          <FiChevronRight className="w-5 h-5 text-indigo-400" />
         </button>
+
+        <div className="w-8 h-px bg-white/10" />
 
         {/* 1. Chat Button */}
         <button
           onClick={onToggleChat}
-          className={`relative p-2.5 rounded-xl transition-all cursor-pointer ${
+          className={`relative p-2.5 rounded-xl transition-all cursor-pointer hover:scale-105 active:scale-95 ${
             isChatOpen
-              ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-              : 'text-slate-400 hover:text-white hover:bg-slate-900'
+              ? 'bg-indigo-600 text-white shadow-[0_0_15px_rgba(99,102,241,0.5)] border border-indigo-400/40'
+              : 'text-slate-400 hover:text-white hover:bg-slate-900/80 border border-transparent'
           }`}
           title="Open Chat Drawer"
         >
           <FiMessageSquare className="w-5 h-5" />
           {unreadMessages > 0 && (
-            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white font-extrabold text-[9px] flex items-center justify-center animate-pulse">
+            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white font-extrabold text-[9px] flex items-center justify-center animate-pulse shadow-md">
               {unreadMessages}
             </span>
           )}
@@ -81,7 +83,7 @@ const RightVerticalToolbar = ({
         {/* 2. Share / Invite Link */}
         <button
           onClick={onCopyInvite}
-          className="p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition-all cursor-pointer"
+          className="p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900/80 border border-transparent hover:border-white/10 transition-all cursor-pointer hover:scale-105 active:scale-95"
           title="Copy Invite Link"
         >
           <FiShare2 className="w-5 h-5" />
@@ -90,7 +92,7 @@ const RightVerticalToolbar = ({
         {/* 3. Grid / Participants View Toggle */}
         <button
           onClick={onToggleParticipants}
-          className="p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition-all cursor-pointer"
+          className="p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900/80 border border-transparent hover:border-white/10 transition-all cursor-pointer hover:scale-105 active:scale-95"
           title="View Participants List"
         >
           <FiGrid className="w-5 h-5" />
@@ -99,7 +101,7 @@ const RightVerticalToolbar = ({
         {/* 4. Room Settings */}
         <button
           onClick={onToggleSettings}
-          className="p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition-all cursor-pointer"
+          className="p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900/80 border border-transparent hover:border-white/10 transition-all cursor-pointer hover:scale-105 active:scale-95"
           title="Room Settings"
         >
           <FiSettings className="w-5 h-5" />
@@ -108,19 +110,19 @@ const RightVerticalToolbar = ({
         {/* 5. Fullscreen Toggle */}
         <button
           onClick={onToggleFullscreen}
-          className="p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition-all cursor-pointer"
+          className="p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900/80 border border-transparent hover:border-white/10 transition-all cursor-pointer hover:scale-105 active:scale-95"
           title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
         >
           {isFullscreen ? <FiMinimize className="w-5 h-5" /> : <FiMaximize className="w-5 h-5" />}
         </button>
       </div>
 
-      {/* Bottom Section: Hide Menu button matching screenshot */}
-      <div className="w-full flex justify-center px-1">
+      {/* Bottom Section: Hide Button */}
+      <div className="w-full flex justify-center px-1.5">
         <button
           type="button"
           onClick={() => setIsOpen(false)}
-          className="w-11 py-1 rounded-md bg-blue-600 hover:bg-blue-500 text-white font-bold text-[9px] leading-tight shadow-md transition-all text-center uppercase tracking-tighter cursor-pointer"
+          className="w-12 py-1 rounded-lg bg-indigo-600/80 hover:bg-indigo-500 text-white font-bold text-[9px] leading-tight shadow-md transition-all text-center uppercase tracking-tighter cursor-pointer hover:scale-105 border border-indigo-400/30"
           title="Hide Menu"
         >
           Hide Menu

@@ -180,6 +180,12 @@ const Room = () => {
     }, 4000);
   };
 
+  const copyRoomLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const toggleFullscreen = () => {
@@ -191,6 +197,46 @@ const Room = () => {
       }
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0A0D14] flex flex-col items-center justify-center space-y-4">
+        <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-slate-400 text-sm font-semibold animate-pulse">Joining Room...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#0A0D14] flex flex-col items-center justify-center p-4">
+        <div className="p-8 rounded-3xl glass-card border border-slate-800 text-center max-w-md">
+          <FiAlertTriangle className="w-12 h-12 text-rose-500 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-white mb-2">Room Error</h2>
+          <p className="text-xs text-slate-400 mb-6">{error}</p>
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs"
+          >
+            Back to Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const roomOwnerId = room?.owner?._id || room?.owner;
+  const isRoomOwner = (uId) => uId === roomOwnerId;
+  const isCoOwner = (uId) => coOwners.includes(uId);
+  const canModerate = isRoomOwner(user?._id) || isCoOwner(user?._id) || user?.role === 'admin';
+
+  const remotePeersArray = Array.from(remoteStreams?.entries() || []); // [[socketId, peerObj]]
+
+  // Build list of participants for moderation list
+  const allParticipantsList = [
+    { socketId: 'local', user, isSpeaking },
+    ...remotePeersArray.map(([sId, p]) => ({ socketId: sId, user: p?.user, isSpeaking: p?.isSpeaking })),
+  ];
 
   return (
     <div className="h-screen w-screen bg-[#0A0D14] text-slate-100 flex flex-col justify-between overflow-hidden select-none relative pr-14">

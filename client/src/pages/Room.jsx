@@ -333,15 +333,6 @@ const Room = () => {
               />
             ))}
 
-            {/* Empty Slots */}
-            {Array.from({ length: Math.max(0, (Number(room?.maxParticipants) || 4) - allParticipantsList.length) }).map((_, idx) => (
-              <EmptySquareSlot
-                key={`empty-slot-${idx}`}
-                slotIndex={allParticipantsList.length + idx + 1}
-                totalSlots={Number(room?.maxParticipants) || 4}
-                onInvite={copyRoomLink}
-              />
-            ))}
           </div>
         </div>
       </div>

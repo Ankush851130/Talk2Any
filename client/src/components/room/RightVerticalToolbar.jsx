@@ -22,7 +22,7 @@ const RightVerticalToolbar = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Collapsed state: Floating Glass Button
+  // Collapsed state: Floating "Tools" Button fixed on the right side
   if (!isOpen) {
     return (
       <div className="fixed right-3 top-1/2 -translate-y-1/2 z-30 select-none">
@@ -46,15 +46,16 @@ const RightVerticalToolbar = ({
     );
   }
 
-  // Expanded Right Vertical Toolbar
+  // Expanded Right Vertical Toolbar containing the 5 icons
   return (
-    <aside className="fixed right-0 top-0 bottom-0 w-16 bg-slate-950/90 border-l border-white/10 flex flex-col items-center justify-between py-5 z-30 backdrop-blur-xl select-none animate-in slide-in-from-right duration-200 shadow-2xl">
-      {/* Top Section Icons */}
-      <div className="flex flex-col items-center space-y-4 w-full px-2">
+    <aside className="fixed right-0 top-0 bottom-0 w-16 bg-slate-950/95 border-l border-white/10 flex flex-col items-center justify-between py-5 z-30 backdrop-blur-xl select-none shadow-2xl animate-in slide-in-from-right duration-200">
+      {/* Top Section */}
+      <div className="flex flex-col items-center space-y-3.5 w-full px-2">
         {/* Collapse Close Button */}
         <button
+          type="button"
           onClick={() => setIsOpen(false)}
-          className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition-all cursor-pointer hover:scale-105"
+          className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900/80 border border-transparent hover:border-white/10 transition-all cursor-pointer hover:scale-105 active:scale-95"
           title="Hide Tools Menu"
         >
           <FiChevronRight className="w-5 h-5 text-indigo-400" />
@@ -64,11 +65,14 @@ const RightVerticalToolbar = ({
 
         {/* 1. Chat Button */}
         <button
-          onClick={onToggleChat}
+          type="button"
+          onClick={() => {
+            if (onToggleChat) onToggleChat();
+          }}
           className={`relative p-2.5 rounded-xl transition-all cursor-pointer hover:scale-105 active:scale-95 ${
             isChatOpen
               ? 'bg-indigo-600 text-white shadow-[0_0_15px_rgba(99,102,241,0.5)] border border-indigo-400/40'
-              : 'text-slate-400 hover:text-white hover:bg-slate-900/80 border border-transparent'
+              : 'text-slate-400 hover:text-white hover:bg-slate-900/80 border border-transparent hover:border-white/10'
           }`}
           title="Open Chat Drawer"
         >
@@ -82,7 +86,10 @@ const RightVerticalToolbar = ({
 
         {/* 2. Share / Invite Link */}
         <button
-          onClick={onCopyInvite}
+          type="button"
+          onClick={() => {
+            if (onCopyInvite) onCopyInvite();
+          }}
           className="p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900/80 border border-transparent hover:border-white/10 transition-all cursor-pointer hover:scale-105 active:scale-95"
           title="Copy Invite Link"
         >
@@ -91,7 +98,10 @@ const RightVerticalToolbar = ({
 
         {/* 3. Grid / Participants View Toggle */}
         <button
-          onClick={onToggleParticipants}
+          type="button"
+          onClick={() => {
+            if (onToggleParticipants) onToggleParticipants();
+          }}
           className="p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900/80 border border-transparent hover:border-white/10 transition-all cursor-pointer hover:scale-105 active:scale-95"
           title="View Participants List"
         >
@@ -100,7 +110,10 @@ const RightVerticalToolbar = ({
 
         {/* 4. Room Settings */}
         <button
-          onClick={onToggleSettings}
+          type="button"
+          onClick={() => {
+            if (onToggleSettings) onToggleSettings();
+          }}
           className="p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900/80 border border-transparent hover:border-white/10 transition-all cursor-pointer hover:scale-105 active:scale-95"
           title="Room Settings"
         >
@@ -109,7 +122,10 @@ const RightVerticalToolbar = ({
 
         {/* 5. Fullscreen Toggle */}
         <button
-          onClick={onToggleFullscreen}
+          type="button"
+          onClick={() => {
+            if (onToggleFullscreen) onToggleFullscreen();
+          }}
           className="p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900/80 border border-transparent hover:border-white/10 transition-all cursor-pointer hover:scale-105 active:scale-95"
           title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
         >
@@ -122,7 +138,7 @@ const RightVerticalToolbar = ({
         <button
           type="button"
           onClick={() => setIsOpen(false)}
-          className="w-12 py-1 rounded-lg bg-indigo-600/80 hover:bg-indigo-500 text-white font-bold text-[9px] leading-tight shadow-md transition-all text-center uppercase tracking-tighter cursor-pointer hover:scale-105 border border-indigo-400/30"
+          className="w-12 py-1 rounded-lg bg-indigo-600/80 hover:bg-indigo-500 text-white font-bold text-[9px] leading-tight shadow-md transition-all text-center uppercase tracking-tighter cursor-pointer hover:scale-105 active:scale-95 border border-indigo-400/30"
           title="Hide Menu"
         >
           Hide Menu

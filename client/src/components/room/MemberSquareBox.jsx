@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { FiMicOff, FiSettings, FiUserX, FiBookmark } from 'react-icons/fi';
+import { FiMicOff, FiSettings, FiUserX } from 'react-icons/fi';
 import AudioEqualizer from './AudioEqualizer';
 
 const MemberSquareBox = ({
@@ -71,7 +71,8 @@ const MemberSquareBox = ({
 
   return (
     <div
-      className={`relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-2xl flex-shrink-0 overflow-hidden select-none shadow-2xl border transition-all duration-300 group hover:scale-105 ${
+      onClick={onPin}
+      className={`relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-2xl flex-shrink-0 overflow-hidden select-none shadow-2xl border transition-all duration-300 group hover:scale-105 cursor-pointer ${
         isSpeaking
           ? 'border-emerald-400 ring-2 ring-emerald-400/80 shadow-[0_0_20px_rgba(52,211,153,0.5)] scale-[1.03]'
           : isPinned
@@ -118,21 +119,15 @@ const MemberSquareBox = ({
         </div>
       )}
 
-      {/* Top Right Gear / Settings / Action Icons */}
+      {/* Top Right Action Icons (Kick & Settings - Bookmark Removed) */}
       <div className="absolute top-1.5 right-1.5 flex items-center space-x-1 z-10">
-        {onPin && (
-          <button
-            onClick={onPin}
-            className="p-1 rounded-lg bg-slate-950/70 hover:bg-slate-900 text-slate-300 hover:text-white transition-colors cursor-pointer border border-white/10"
-            title={isPinned ? 'Unpin from stage' : 'Pin to stage'}
-          >
-            <FiBookmark className={`w-3 h-3 ${isPinned ? 'text-indigo-400 fill-indigo-400' : ''}`} />
-          </button>
-        )}
-
         {canModerate && !isLocal && onKick && (
           <button
-            onClick={onKick}
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onKick();
+            }}
             className="p-1 rounded-lg bg-rose-600/90 hover:bg-rose-600 text-white transition-colors cursor-pointer border border-rose-400/30"
             title="Kick participant"
           >
@@ -142,6 +137,7 @@ const MemberSquareBox = ({
 
         <button
           type="button"
+          onClick={(e) => e.stopPropagation()}
           className="p-1 rounded-lg bg-slate-950/50 hover:bg-slate-900/80 text-slate-300 hover:text-white transition-colors cursor-pointer border border-white/5 opacity-80 group-hover:opacity-100"
           title="Member settings"
         >

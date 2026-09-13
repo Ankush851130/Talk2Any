@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { FiMicOff, FiMaximize2, FiUser, FiTv, FiBookmark, FiUserX } from 'react-icons/fi';
+import { FiMicOff, FiUser, FiTv, FiUserX } from 'react-icons/fi';
 import AudioEqualizer from './AudioEqualizer';
 
 const PeerVideo = ({
@@ -35,10 +35,20 @@ const PeerVideo = ({
     }
   }, [stream]);
 
+  const getInitials = (name) => {
+    if (!name) return 'U';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+  };
+
   return (
     <div
-      className={`relative w-full h-full min-h-[220px] rounded-3xl bg-slate-900 overflow-hidden border transition-all duration-300 ${isSpeaking ? 'speaking-glow border-emerald-500 ring-2 ring-emerald-500/40' : 'border-slate-800'
-        } ${isPinned ? 'ring-2 ring-indigo-500 shadow-2xl' : ''}`}
+      className={`relative w-full h-full min-h-[220px] rounded-3xl bg-slate-900 overflow-hidden border transition-all duration-300 ${
+        isSpeaking ? 'speaking-glow border-emerald-500 ring-2 ring-emerald-500/40' : 'border-slate-800'
+      } ${isPinned ? 'ring-2 ring-indigo-500 shadow-2xl' : ''}`}
     >
       {/* Audio Stream Element - Always Active for Stream Audio Playback */}
       {stream && (
@@ -61,29 +71,44 @@ const PeerVideo = ({
           className={`w-full h-full object-cover ${isLocal && !isScreenSharing ? 'scale-x-[-1]' : ''}`}
         />
       ) : (
-        /* Video Off Avatar Placeholder with Active Speaker Glow Ring & Equalizer */
+        /* Video Off Circular DP / Avatar View in the Middle of the Room Stage */
         <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 p-6 text-center">
-          <div className="relative mb-3">
-            <img
-              src={user?.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${user?.username || 'user'}`}
-              alt={user?.username || 'Participant'}
-              className={`w-20 h-20 rounded-full border-2 bg-slate-800 object-cover shadow-xl transition-all duration-300 ${isSpeaking
-                ? 'ring-4 ring-emerald-500 border-emerald-400 animate-pulse shadow-emerald-500/50 shadow-2xl scale-105'
-                : 'border-indigo-500/40'
+          <div className="relative mb-4">
+            {user?.avatar ? (
+              <img
+                src={user.avatar}
+                alt={user?.username || 'Participant'}
+                className={`w-28 h-28 sm:w-36 sm:h-36 rounded-full border-4 bg-slate-800 object-cover shadow-2xl transition-all duration-300 ${
+                  isSpeaking
+                    ? 'ring-4 ring-emerald-500 border-emerald-400 animate-pulse shadow-emerald-500/50 scale-105'
+                    : 'border-indigo-500/50 shadow-indigo-500/30'
                 }`}
-            />
+              />
+            ) : (
+              <div
+                className={`w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-gradient-to-br from-indigo-600 via-purple-700 to-slate-900 border-4 flex items-center justify-center shadow-2xl transition-all duration-300 ${
+                  isSpeaking
+                    ? 'ring-4 ring-emerald-500 border-emerald-400 animate-pulse shadow-emerald-500/50 scale-105'
+                    : 'border-indigo-500/50 shadow-indigo-500/30'
+                }`}
+              >
+                <span className="text-3xl sm:text-4xl font-black text-white tracking-widest drop-shadow-lg">
+                  {getInitials(user?.username || 'Guest')}
+                </span>
+              </div>
+            )}
             {isSpeaking && (
-              <span className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 border-2 border-slate-900 shadow-lg">
+              <span className="absolute -top-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500 border-2 border-slate-900 shadow-lg">
                 <AudioEqualizer size="sm" isSpeaking={true} />
               </span>
             )}
           </div>
-          <span className="text-sm font-bold text-white tracking-tight flex items-center space-x-1">
+          <span className="text-base font-bold text-white tracking-tight flex items-center space-x-1.5">
             <span>{user?.username || 'Guest'}</span>
             {isRoomOwner && <span className="text-amber-400 font-extrabold text-xs" title="Room Owner">👑</span>}
             {isCoOwner && !isRoomOwner && <span className="text-indigo-400 font-extrabold text-xs" title="Co-Owner">⭐</span>}
           </span>
-          <span className="text-xs text-slate-500">{isLocal ? '(You)' : user?.country || 'Global'}</span>
+          <span className="text-xs text-slate-400 mt-0.5">{isLocal ? '(You)' : user?.country || 'Global'}</span>
         </div>
       )}
 
@@ -121,26 +146,16 @@ const PeerVideo = ({
         )}
       </div>
 
-      {/* Top Right Overlay Action Controls */}
+      {/* Top Right Overlay Action Controls (Bookmark Removed) */}
       <div className="absolute top-3 right-3 flex items-center space-x-1.5 z-10">
         {canModerate && !isLocal && onKick && (
           <button
+            type="button"
             onClick={onKick}
             className="p-1.5 rounded-full bg-rose-600/90 text-white backdrop-blur-md border border-rose-500 hover:bg-rose-500 text-xs transition-all cursor-pointer shadow-lg"
             title="Kick participant from room"
           >
             <FiUserX className="w-3.5 h-3.5" />
-          </button>
-        )}
-
-        {onPin && (
-          <button
-            onClick={onPin}
-            className={`p-1.5 rounded-full backdrop-blur-md border text-xs transition-colors cursor-pointer ${isPinned ? 'bg-indigo-600 text-white border-indigo-500' : 'bg-slate-950/80 text-slate-300 border-slate-800 hover:text-white'
-              }`}
-            title={isPinned ? 'Unpin participant' : 'Pin participant'}
-          >
-            <FiBookmark className="w-3.5 h-3.5" />
           </button>
         )}
       </div>

@@ -15,6 +15,9 @@ import ControlsBar from '../components/room/ControlsBar';
 import ChatPanel from '../components/room/ChatPanel';
 import ParticipantsList from '../components/room/ParticipantsList';
 import RoomDetailsModal from '../components/dashboard/RoomDetailsModal';
+import AIGrammarBadge from '../components/room/AIGrammarBadge';
+import AIGrammarReportModal from '../components/room/AIGrammarReportModal';
+import { useSpeechGrammar } from '../hooks/useSpeechGrammar';
 import {
   FiLock,
   FiGlobe,
@@ -50,6 +53,17 @@ const Room = () => {
     toggleHandRaise,
     leaveWebRTCRoom,
   } = useWebRTC();
+
+  const {
+    isGrammarEnabled,
+    isAnalyzing,
+    report,
+    isReportModalOpen,
+    loadingReport,
+    toggleGrammar,
+    triggerFinalAnalysis,
+    closeReportModal,
+  } = useSpeechGrammar(roomId);
 
   const [room, setRoom] = useState(null);
   const [coOwners, setCoOwners] = useState([]);
@@ -150,7 +164,17 @@ const Room = () => {
     }
   };
 
-  const handleLeave = () => {
+  const handleLeave = async () => {
+    if (isGrammarEnabled) {
+      await triggerFinalAnalysis();
+    } else {
+      leaveWebRTCRoom(roomId);
+      navigate('/dashboard');
+    }
+  };
+
+  const handleCloseReportModal = async () => {
+    await closeReportModal();
     leaveWebRTCRoom(roomId);
     navigate('/dashboard');
   };
@@ -245,7 +269,10 @@ const Room = () => {
       <div className="absolute bottom-10 right-1/4 w-[400px] h-[400px] bg-purple-600/15 rounded-full blur-[130px] pointer-events-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-600/10 rounded-full blur-[160px] pointer-events-none" />
 
-      {/* Top Floating Controls Bar (Mic, Cam, Signal, Leave) matching screenshot */}
+      {/* Live AI Grammar Analyzing Badge Indicator */}
+      <AIGrammarBadge isAnalyzing={isAnalyzing} />
+
+      {/* Top Floating Controls Bar (Mic, Cam, Signal, AI Grammar, Leave) */}
       <TopControlBar
         isMuted={isMuted}
         isVideoOff={isVideoOff}
@@ -253,6 +280,8 @@ const Room = () => {
         onToggleVideo={toggleVideo}
         onLeaveRoom={handleLeave}
         onTestAudio={handleTestAudio}
+        isGrammarEnabled={isGrammarEnabled}
+        onToggleGrammar={toggleGrammar}
       />
 
       {/* Right Vertical Sidebar Toolbar matching screenshot */}
@@ -377,6 +406,14 @@ const Room = () => {
         isOpen={isDetailsModalOpen}
         onClose={() => setIsDetailsModalOpen(false)}
         room={room}
+      />
+
+      {/* AI Grammar Post-Call Report Modal */}
+      <AIGrammarReportModal
+        isOpen={isReportModalOpen}
+        onClose={handleCloseReportModal}
+        report={report}
+        loading={loadingReport}
       />
     </div>
   );

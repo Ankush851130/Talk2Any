@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiMic, FiMicOff, FiVideo, FiVideoOff, FiBarChart2, FiPhoneOff } from 'react-icons/fi';
+import { FiMic, FiMicOff, FiVideo, FiVideoOff, FiBarChart2, FiPhoneOff, FiCpu } from 'react-icons/fi';
 
 const TopControlBar = ({
   isMuted,
@@ -8,6 +8,8 @@ const TopControlBar = ({
   onToggleVideo,
   onLeaveRoom,
   onTestAudio,
+  isGrammarEnabled,
+  onToggleGrammar,
 }) => {
   return (
     <div className="fixed top-3 left-1/2 -translate-x-1/2 z-30 select-none">
@@ -45,6 +47,21 @@ const TopControlBar = ({
           title="Test Audio Level"
         >
           <FiBarChart2 className="w-5 h-5 text-indigo-400" />
+        </button>
+
+        {/* AI Grammar Toggle Button */}
+        <button
+          onClick={onToggleGrammar}
+          className={`h-10 px-3 rounded-xl flex items-center space-x-1.5 transition-all cursor-pointer shadow-md hover:scale-105 active:scale-95 text-xs font-bold border ${
+            isGrammarEnabled
+              ? 'bg-purple-600/90 text-white border-purple-400/50 shadow-[0_0_15px_rgba(168,85,247,0.4)]'
+              : 'bg-slate-800/80 text-slate-400 hover:text-slate-200 border-white/5 hover:border-purple-400/30'
+          }`}
+          title={isGrammarEnabled ? 'Disable AI Grammar Checker' : 'Enable AI Grammar Checker'}
+        >
+          <FiCpu className={`w-4 h-4 ${isGrammarEnabled ? 'text-purple-200 animate-spin' : 'text-slate-400'}`} />
+          <span className="hidden sm:inline">AI Grammar: {isGrammarEnabled ? 'ON' : 'OFF'}</span>
+          <span className="sm:hidden">{isGrammarEnabled ? 'ON' : 'OFF'}</span>
         </button>
 
         <div className="w-px h-6 bg-white/10 my-auto mx-1" />
